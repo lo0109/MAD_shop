@@ -10,15 +10,16 @@ import { ProdList } from "../component/ProdList";
 
 const Stack = createStackNavigator();
 
-export const Category = ({ category, products }) => {
+export const Category = ({ route }) => {
+  const { category } = route.params;
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="CatProduct"
-        component={ProdList}
-        // initialParams={{ products }}
+        component={CatProdList}
+        initialParams={{ category: category }}
         options={{
-          // title: { category },
           headerShown: true,
         }}
       />

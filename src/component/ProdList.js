@@ -8,7 +8,7 @@ import { prodCom } from "./productCom";
 export const ProdList = ({ prod }) => {
   const navigation = useNavigation();
 
-  const products = prod ? prod : prodCom();
+  const products = prodCom();
 
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);

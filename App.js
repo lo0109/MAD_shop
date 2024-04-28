@@ -30,9 +30,10 @@ const CustomDrawerContent = ({
   };
 
   const selectCat = (cat) => {
-    const products = prodCom();
-    const prod = products.find((p) => p.category === cat);
-    navigation.navigate("Product", { prod });
+    // const products = prodCom();
+    // const prod = products.find((p) => p.category === cat);
+    navigation.navigate("Category", { category: cat });
+    console.log(cat);
   };
   return (
     <View style={styles.drawer}>
@@ -52,7 +53,7 @@ const CustomDrawerContent = ({
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                   <Pressable
-                    onPress={selectCat.bind(null, item.id)}
+                    onPress={selectCat.bind(null, item)}
                     style={styles.item}
                   >
                     <View style={styles.cat}>
@@ -99,9 +100,9 @@ export default function App() {
         />
         <Drawer.Screen
           name="Category"
-          component={ProdList}
+          component={CatProdList}
           options={{
-            title: "Product",
+            title: "category",
             headerRight: () => (
               <View>
                 <Button
