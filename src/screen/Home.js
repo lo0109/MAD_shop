@@ -3,7 +3,6 @@ import { useIsFocused } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ProdList } from "../component/ProdList";
 import { DetailNav } from "./Detail";
-import React from "react";
 export const Home = () => {
   const Stack = createStackNavigator();
 

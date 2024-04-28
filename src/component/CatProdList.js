@@ -8,7 +8,7 @@ import { prodCom } from "./productCom";
 export const CatProdList = ({ navigation, route }) => {
   const { category } = route.params;
 
-  const prod = prodCom();
+  const { loading, products: prod } = prodCom();
   const products = prod.filter((p) => p.category === category);
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);

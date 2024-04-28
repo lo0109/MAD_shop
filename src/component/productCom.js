@@ -4,8 +4,10 @@ import { useIsFocused } from "@react-navigation/native";
 
 export const prodCom = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     const loadData = async () => {
       try {
         // Load and update data
@@ -15,13 +17,15 @@ export const prodCom = () => {
         setProducts(data.products);
       } catch (error) {
         console.error("Error loading data:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
     loadData();
   }, []);
-  return products;
+  return { loading, products };
 };
+
 export const catCom = () => {
   const [categories, setCategories] = useState([]);
 
