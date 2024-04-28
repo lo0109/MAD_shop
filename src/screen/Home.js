@@ -1,65 +1,25 @@
-import { useEffect, useState } from "react";
-import { loadDataAndUpdate } from "../datamodel/data";
-import {
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-} from "react-native";
-
+import { StyleSheet } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { ProdList } from "../component/ProdList";
+import { DetailNav } from "./Detail";
+import React from "react";
 export const Home = () => {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        // Load and update data
-        const data = await loadDataAndUpdate();
-
-        // Update state with fetched products and categories
-        setProducts(data.products);
-        setCategories(data.categories);
-      } catch (error) {
-        console.error("Error loading data:", error);
-      }
-    };
-
-    loadData();
-  }, []);
+  const Stack = createStackNavigator();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.list}>
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => console.log("Pressed: ", item.id)}
-              style={styles.item}
-            >
-              <View style={styles.detail}>
-                <View>
-                  <Image source={{ uri: item.image }} style={styles.image} />
-                </View>
-
-                <View style={styles.description}>
-                  <View>
-                    <Text style={styles.title}>{item.title} </Text>
-                  </View>
-                  <View>
-                    <Text style={styles.price}>Price: ${item.price}</Text>
-                  </View>
-                </View>
-              </View>
-            </Pressable>
-          )}
-        />
-      </View>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Product"
+        component={ProdList}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Detail"
+        component={DetailNav}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
 };
 
@@ -85,9 +45,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   detail: {
-    // padding: 10,
     flexDirection: "row",
-    // backgroundColor: "green",
+    alignItems: "center",
   },
   description: {
     flexDirection: "column",

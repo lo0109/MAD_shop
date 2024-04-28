@@ -5,18 +5,20 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { DetailNav } from "./Detail";
 const Stack = createStackNavigator();
 
-export const Product = (category) => {
+export const Product = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={{ category }}
+        name="Product"
         component={ProdList}
-        options={{ headerShown: true }}
+        options={{
+          headerShown: true,
+        }}
       />
       <Stack.Screen
         name="Detail"
         component={DetailNav}
-        options={{ headerShown: false }}
+        options={{ headerShown: true }}
       />
     </Stack.Navigator>
   );

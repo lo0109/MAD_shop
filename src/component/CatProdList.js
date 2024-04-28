@@ -5,11 +5,8 @@ import { useEffect, useState } from "react";
 import { loadDataAndUpdate } from "../datamodel/data";
 import { prodCom } from "./productCom";
 
-export const ProdList = ({ prod }) => {
-  const navigation = useNavigation();
-
-  const products = prod ? prod : prodCom();
-
+export const CatProdList = ({ navigation, prod }) => {
+  const products = prod;
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);
     navigation.navigate("Detail", { prod });

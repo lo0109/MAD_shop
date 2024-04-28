@@ -2,40 +2,32 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button, Pressable } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
+import { CatList } from "../component/CatList";
+import { createStackNavigator } from "@react-navigation/stack";
+import { DetailNav } from "./Detail";
+import { CatProdList } from "../component/CatProdList";
+import { ProdList } from "../component/ProdList";
 
-const url = "https://fakestoreapi.com/products/";
+const Stack = createStackNavigator();
 
-export const Category = ({ navigation }) => {
-  const [categories, setCategories] = useState([]);
-
-  const selectCat = (i) => {
-    navigation.navigate("Product", { i });
-  };
-
-  useEffect(() => {
-    const fetchCat = async () => {
-      try {
-        const res = await fetch(url + "categories");
-        const data = await res.json();
-        setCategories(data);
-      } catch (e) {
-        console.error("error in fetchCat");
-      }
-    };
-    fetchCat();
-  }, []);
+export const Category = ({ category, products }) => {
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={categories}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => selectCat(item)}>
-            <Text>{item}</Text>
-          </Pressable>
-        )}
+    <Stack.Navigator>
+      <Stack.Screen
+        name="CatProduct"
+        component={ProdList}
+        // initialParams={{ products }}
+        options={{
+          // title: { category },
+          headerShown: true,
+        }}
       />
-    </View>
+      <Stack.Screen
+        name="Detail"
+        component={DetailNav}
+        options={{ headerShown: true }}
+      />
+    </Stack.Navigator>
   );
 };
 
