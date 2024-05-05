@@ -11,12 +11,12 @@ export const Home = () => {
       <Stack.Screen
         name="Product"
         component={ProdList}
-        options={{ headerShown: false }}
+        options={{ headerShown: true }}
       />
       <Stack.Screen
         name="Detail"
         component={DetailNav}
-        options={{ headerShown: false }}
+        options={{ headerShown: true }}
       />
     </Stack.Navigator>
   );

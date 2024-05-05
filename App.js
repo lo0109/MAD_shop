@@ -28,7 +28,7 @@ const CustomDrawerContent = ({
   const toggleCategories = () => {
     setExpandedCategories(!expandedCategories);
   };
-
+  const categories = catCom();
   const selectCat = (cat) => {
     // const products = prodCom();
     // const prod = products.find((p) => p.category === cat);
@@ -49,7 +49,7 @@ const CustomDrawerContent = ({
             <View style={{ marginLeft: 20 }}>
               <FlatList
                 style={styles.list}
-                data={catCom()}
+                data={categories}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                   <Pressable

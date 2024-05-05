@@ -13,13 +13,15 @@ import { useEffect, useState } from "react";
 import { loadDataAndUpdate } from "../datamodel/data";
 import { prodCom } from "./productCom";
 
-export const ProdList = ({ prod }) => {
+export const ProdList = () => {
   const navigation = useNavigation();
 
   const { loading, products } = prodCom();
 
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);
+    navigation.setOptions({ title: prod.title });
+    console.log(prod.title);
     navigation.navigate("Detail", { prod });
   };
   return (
