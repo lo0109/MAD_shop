@@ -13,7 +13,7 @@ export const DetailNav = ({ route }) => {
         component={ProdDetailCom}
         initialParams={{ prod: route.params.prod }}
       />
-      <Tabs.Screen name="Order" component={Order} />
+      <Tabs.Screen name="Cart" component={Order} />
     </Tabs.Navigator>
   );
 };

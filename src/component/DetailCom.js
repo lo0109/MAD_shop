@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, Button, Image } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 export const ProdDetailCom = ({ navigation, route }) => {
   const { id, image, title, price, description } = route.params.prod;
+  console.log("route", route);
   return (
     <View style={styles.container}>
       <View style={styles.detail}>

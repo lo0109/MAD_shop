@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { ProdList } from "../component/ProdList";
 import { createStackNavigator } from "@react-navigation/stack";
-import { DetailNav } from "./Detail";
+import { DetailNav } from "../screen/Detail";
 const Stack = createStackNavigator();
 
 export const Product = () => {

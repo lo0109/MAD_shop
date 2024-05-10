@@ -12,7 +12,6 @@ export const prodCom = () => {
       try {
         // Load and update data
         const data = await loadProdDataAndUpdate();
-
         // Update state with fetched products and categories
         setProducts(data.products);
       } catch (error) {
@@ -28,7 +27,6 @@ export const prodCom = () => {
 
 export const catCom = () => {
   const [categories, setCategories] = useState([]);
-
   useEffect(() => {
     const loadData = async () => {
       try {

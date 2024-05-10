@@ -2,13 +2,13 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View, StyleSheet } from "react-native";
 import { loadDataAndUpdate } from "../datamodel/data";
-import { catCom, prodCom } from "./productCom";
+import { catCom, prodCom } from "../component/productCom";
 export const CatList = ({ navigation }) => {
   const products = prodCom();
   const categories = catCom();
   const selectCat = (cat) => {
     const prod = products.find((p) => p.category === cat);
-    navigation.navigate("Product", { prod });
+    navigation.navigate("CatProduct", { prod });
   };
   return (
     <View style={styles.container}>

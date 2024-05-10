@@ -39,14 +39,10 @@ export const loadProdDataAndUpdate = async () => {
     const productResponse = await fetch(ProductUrl);
     const productData = await productResponse.json();
 
-    // Retrieve stored products and categories from AsyncStorage
+    // Retrieve stored products from AsyncStorage
     const storedProductsString = await AsyncStorage.getItem("products");
     const storedProducts = storedProductsString
       ? JSON.parse(storedProductsString)
-      : [];
-    const storedCategoriesString = await AsyncStorage.getItem("categories");
-    const storedCategories = storedCategoriesString
-      ? JSON.parse(storedCategoriesString)
       : [];
 
     // Compare fetched products with stored products

@@ -9,19 +9,16 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import { useEffect, useState } from "react";
-import { loadDataAndUpdate } from "../datamodel/data";
 import { prodCom } from "./productCom";
-
-export const CatProdList = ({ navigation, route }) => {
-  const { category } = route.params;
-
+export const CatProdList = ({ route }) => {
+  const navigation = useNavigation();
+  const category = route.params.category;
   const { loading, products: prod } = prodCom();
   const products = prod.filter((p) => p.category === category);
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);
-    console.log(prod.ratings);
-    navigation.navigate("Detail", { prod });
+    console.log("rating", prod.rating, prod.rating.rate, prod.rating.count);
+    navigation.navigate("CatDetail", { prod });
   };
   return (
     <View style={styles.container}>

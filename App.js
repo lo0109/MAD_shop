@@ -9,10 +9,9 @@ import {
   View,
 } from "react-native";
 import { Category } from "./src/screen/Category";
-import { Product } from "./src/screen/Product";
 import { Home } from "./src/screen/Home";
 import { useState } from "react";
-import { CatList } from "./src/component/CatList";
+import { CatList } from "./src/trash/CatList";
 import { FlatList } from "react-native-gesture-handler";
 import { catCom, prodCom } from "./src/component/productCom";
 import { CatProdList } from "./src/component/CatProdList";
@@ -29,11 +28,11 @@ const CustomDrawerContent = ({
     setExpandedCategories(!expandedCategories);
   };
   const categories = catCom();
-  const selectCat = (cat) => {
+  const selectCat = (category) => {
     // const products = prodCom();
     // const prod = products.find((p) => p.category === cat);
-    navigation.navigate("Category", { category: cat });
-    console.log(cat);
+    navigation.navigate("Category", { category });
+    console.log(category);
   };
   return (
     <View style={styles.drawer}>
@@ -100,7 +99,7 @@ export default function App() {
         />
         <Drawer.Screen
           name="Category"
-          component={CatProdList}
+          component={Category}
           options={{
             title: "category",
             headerRight: () => (
