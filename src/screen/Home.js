@@ -3,6 +3,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ProdList } from "../component/ProdList";
 import { DetailNav } from "./Detail";
+
 export const Home = () => {
   const Stack = createStackNavigator();
 
@@ -11,12 +12,12 @@ export const Home = () => {
       <Stack.Screen
         name="Product"
         component={ProdList}
-        options={{ headerShown: true }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Detail"
         component={DetailNav}
-        options={{ headerShown: true }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

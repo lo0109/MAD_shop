@@ -3,7 +3,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchCat } from "../service/fetchAPI";
 // Define an initial state
 const initialState = {
-  categoryData: {},
+  categoryData: [],
+  selectedCategory: null,
   loading: false,
   error: null,
 };
@@ -11,12 +12,13 @@ const initialState = {
 // Create an asynchronous thunk action
 export const loadCatData = createAsyncThunk(
   "loadCategory",
-  async (thunkAPI) => {
-    const category = thunkAPI.getState().category?.categoryData.category;
-    if (category) return { category: category };
+  async (_, thunkAPI) => {
+    const category = thunkAPI.getState().category?.categoryData;
+    console.log("loadingCategoryAPI", category.length);
+    if (category.length) return category;
     try {
       const ret = await fetchCat();
-      return { category: ret };
+      return ret;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -26,7 +28,11 @@ export const loadCatData = createAsyncThunk(
 const categorySlice = createSlice({
   name: "category",
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedCategory: (state, action) => {
+      state.selectedCategory = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loadCatData.pending, (state) => {
@@ -36,16 +42,14 @@ const categorySlice = createSlice({
       .addCase(loadCatData.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        const { category } = action.payload;
-        //why need to check again?
-        if (!state.categoryData.category) state.categoryData = category;
+        state.categoryData = action.payload;
       })
       .addCase(loadCatData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.categoryData = {};
       });
   },
 });
-export const selectCategory = (state) => state.category;
+export const showCategory = (state) => state.category;
 export default categorySlice.reducer;
+export const { setSelectedCategory } = categorySlice.actions;

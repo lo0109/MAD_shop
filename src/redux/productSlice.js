@@ -1,9 +1,9 @@
 // src/redux/productSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchProductByID } from "../service/apiService";
+import { fetchProduct } from "../service/fetchAPI";
 // Define an initial state
 const initialState = {
-  productData: {},
+  productData: [],
   loading: false,
   error: null,
 };
@@ -11,11 +11,12 @@ const initialState = {
 // Create an asynchronous thunk action
 export const loadProductData = createAsyncThunk(
   "loadProduct",
-  async (productId, thunkAPI) => {
-    if (!productId)
-      return thunkAPI.rejectWithValue("Product Id can't be empty.");
+  async (_, thunkAPI) => {
+    const product = thunkAPI.getState().product?.productData;
+    console.log("loadingProductAPI", product.length);
+    if (product.length) return product;
     try {
-      const ret = await fetchProductByID(productId);
+      const ret = await fetchProduct();
       return ret;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -41,9 +42,8 @@ const productSlice = createSlice({
       .addCase(loadProductData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.productData = {};
       });
   },
 });
-export const selectProduct = (state) => state.product;
+export const showProduct = (state) => state.product;
 export default productSlice.reducer;

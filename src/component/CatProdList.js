@@ -10,14 +10,19 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { prodCom } from "./productCom";
+import { useSelector } from "react-redux";
+import { showProduct } from "../redux/productSlice";
+
 export const CatProdList = ({ route }) => {
   const navigation = useNavigation();
+  const { productData, loading, error } = useSelector(showProduct);
+
   const category = route.params.category;
-  const { loading, products: prod } = prodCom();
-  const products = prod.filter((p) => p.category === category);
+
+  console.log(category);
+  const products = productData.filter((p) => p.category === category);
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);
-    console.log("rating", prod.rating, prod.rating.rate, prod.rating.count);
     navigation.navigate("CatDetail", { prod });
   };
   return (
@@ -62,7 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   heading: {},
   image: {

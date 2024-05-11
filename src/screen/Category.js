@@ -10,21 +10,35 @@ import { ProdList } from "../component/ProdList";
 
 const Stack = createStackNavigator();
 
-export const Category = ({ route }) => {
+export const Category = ({ navigation, route }) => {
+  const category = route.params.category;
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="CatProduct"
         component={CatProdList}
-        initialParams={{ category: route.params.category }}
+        initialParams={{ category }}
         options={{
           headerShown: true,
+          title: category,
+          headerRight: () => (
+            <View>
+              <Button
+                title="login"
+                onPress={() => console.log("Pressed login")}
+              />
+            </View>
+          ),
+          headerTintColor: "navy",
+          headerLeft: () => (
+            <Button title="Back" onPress={() => navigation.goBack()} />
+          ),
         }}
       />
       <Stack.Screen
         name="CatDetail"
         component={DetailNav}
-        options={{ headerShown: true }}
+        options={{ headerShown: true, title: category }}
       />
     </Stack.Navigator>
   );

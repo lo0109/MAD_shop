@@ -10,28 +10,35 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
-import { loadDataAndUpdate } from "../datamodel/data";
-import { prodCom } from "./productCom";
+import { useDispatch, useSelector } from "react-redux";
+import { loadProductData, showProduct } from "../redux/productSlice";
 
 export const ProdList = () => {
   const navigation = useNavigation();
-
-  const { loading, products } = prodCom();
+  const dispatch = useDispatch();
+  const { productData, loading, error } = useSelector(showProduct);
+  useEffect(() => {
+    dispatch(loadProductData());
+  }, []);
 
   const selectProd = (id) => {
-    const prod = products.find((p) => p.id === id);
-    navigation.setOptions({ title: prod.title });
+    const prod = productData.find((p) => p.id === id);
     console.log(prod.title);
     navigation.navigate("Detail", { prod });
+    // navigation.setOptions({ title: prod.title });
   };
   return (
     <View style={styles.container}>
       <View style={styles.list}>
-        {loading ? (
+        {!productData ? (
+          <Button title="refresh" onPress={() => dispatch(loadProductData)} />
+        ) : loading ? (
           <ActivityIndicator size="large" color="blue" />
+        ) : error ? (
+          <Text>Error: {error}</Text>
         ) : (
           <FlatList
-            data={products}
+            data={productData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <Pressable
@@ -66,7 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   heading: {},
   image: {
