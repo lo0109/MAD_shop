@@ -7,38 +7,45 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { DetailNav } from "./Detail";
 import { CatProdList } from "../component/CatProdList";
 import { ProdList } from "../component/ProdList";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedCategory } from "../redux/catSlice";
+import { ImageButton } from "../component/imageButton";
 
 const Stack = createStackNavigator();
 
-export const Category = ({ navigation, route }) => {
-  const category = route.params.category;
+export const Category = ({ navigation }) => {
+  const selectedCategory = useSelector(
+    (state) => state.category.selectedCategory
+  );
+  const cartNavigation = () => {
+    navigation.navigate("Cart");
+  };
+  const userNavigation = () => {
+    navigation.navigate("Login");
+  };
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="CatProduct"
-        component={CatProdList}
-        initialParams={{ category }}
+        component={ProdList}
+        // initialParams={{ selectedCategory }}
         options={{
           headerShown: true,
-          title: category,
+          title: selectedCategory,
           headerRight: () => (
-            <View>
-              <Button
-                title="login"
-                onPress={() => console.log("Pressed login")}
-              />
+            <View style={{ flexDirection: "row" }}>
+              <ImageButton icon="cart-outline" fun={cartNavigation} />
+              <ImageButton icon="person-outline" fun={userNavigation} />
             </View>
           ),
           headerTintColor: "navy",
           headerLeft: () => (
-            <Button title="Back" onPress={() => navigation.goBack()} />
+            <ImageButton
+              icon="menu-outline"
+              fun={() => navigation.openDrawer()}
+            />
           ),
         }}
-      />
-      <Stack.Screen
-        name="CatDetail"
-        component={DetailNav}
-        options={{ headerShown: true, title: category }}
       />
     </Stack.Navigator>
   );

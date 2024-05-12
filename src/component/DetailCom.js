@@ -7,78 +7,91 @@ import {
   Image,
   Animated,
   Easing,
+  ActivityIndicator,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedCategory } from "../redux/catSlice";
+import { setSelectedProduct } from "../redux/productSlice";
+import { ImageButton } from "./imageButton";
+import { addItemToCart } from "../redux/cartSlice";
+export const ProdDetailCom = ({ navigation }) => {
+  const product = useSelector((state) => state.product.selectedProduct);
+  const cartItems = useSelector((state) => state.cart.items) ?? {};
 
-export const ProdDetailCom = ({ navigation, route }) => {
-  const { id, image, title, price, description, category } = route.params.prod;
-  // const [animatedValue] = useState(new Animated.Value(0));
-  // const [textWidth, setTextWidth] = useState(0);
-  // const [containerWidth, setContainerWidth] = useState(310);
+  const { id, image, title, price, description, category, rating } = product;
+  const [loading, setloading] = useState(true);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   generateHorizontalScrollAnimation();
-  // }, [containerWidth, textWidth]);
-  // const generateHorizontalScrollAnimation = () => {
-  //   const scrollDistance = textWidth - containerWidth;
-  //   if (scrollDistance > 0) {
-  //     Animated.loop(
-  //       Animated.timing(animatedValue, {
-  //         toValue: -scrollDistance,
-  //         duration: 5000,
-  //         useNativeDriver: true,
-  //         easing: Easing.linear,
-  //       })
-  //     ).start();
-  //   }
-  // };
+  const itemInCart = cartItems[id] ? true : false;
 
   return (
     <View style={styles.container}>
       <View style={styles.navigation}>
         <View style={styles.navigateTextBox}>
-          <Button title="Home" onPress={() => navigation.navigate("Product")} />
+          <Button
+            title="Home"
+            onPress={() => {
+              navigation.navigate("Product");
+              dispatch(setSelectedCategory());
+            }}
+          />
           <Text>/</Text>
           <Button
             title={category}
-            onPress={() => navigation.navigate("CatProduct", { category })}
+            onPress={() => {
+              navigation.navigate("Category");
+              dispatch(setSelectedCategory(category));
+            }}
           />
         </View>
-
         <View style={styles.navigateTextBox}>
           <Text>/ </Text>
           <Text style={styles.navigateText} numberOfLines={1}>
             {title}
           </Text>
-          {/* <Animated.Text
-            style={[
-              styles.navigateText,
-              {
-                transform: [
-                  {
-                    translateX: animatedValue,
-                  },
-                ],
-              },
-            ]}
-            onLayout={(event) => {
-              setTextWidth(300);
-            }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {title}
-          </Animated.Text> */}
         </View>
       </View>
       <View style={styles.detail}>
+        {loading && <ActivityIndicator size="large" color="grey" />}
         <View>
-          <Image source={{ uri: image }} style={styles.image} />
+          <Image
+            source={{ uri: image }}
+            style={styles.image}
+            onLoadStart={() => setloading(true)}
+            onLoad={() => setloading(false)}
+          />
         </View>
 
         <View>
           <Text style={styles.title}>{title} </Text>
-          <Text style={styles.price}>Price: ${price}</Text>
+        </View>
+        <View style={styles.priceBox}>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={[styles.price]}>Price: ${price}</Text>
+            <View>
+              <Text>Sold: {rating.count}</Text>
+              <Text>Rating: {rating.rate}</Text>
+            </View>
+          </View>
+          <View>
+            {itemInCart ? (
+              <Text>Item in Cart</Text>
+            ) : (
+              <ImageButton
+                icon="cart-outline"
+                fun={() => {
+                  dispatch(
+                    addItemToCart({
+                      id: id,
+                      item: { id, title, price, image, qty: 1 },
+                    })
+                  );
+                  navigation.navigate("Cart");
+                }}
+              />
+            )}
+          </View>
         </View>
       </View>
       <Text
@@ -114,17 +127,26 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   title: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     // backgroundColor: "yellow",
     flexDirection: "column",
     padding: 10,
+  },
+  priceBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    backgroundColor: "lightgrey",
+    paddingHorizontal: 10,
   },
   price: {
     fontSize: 30,
     fontWeight: "bold",
     color: "green",
     textAlign: "right",
+    paddingRight: 10,
   },
   detail: {
     flexDirection: "column",
@@ -133,18 +155,63 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 20,
+    marginBottom: 20,
   },
   navigation: {
     flexDirection: "row",
   },
   navigateTextBox: {
-    justifyContent: "felx-start",
+    justifyContent: "flex-start",
     alignItems: "center",
-    flex: 1,
     flexDirection: "row",
   },
   navigateText: {
     fontSize: 15,
+    // width: "100%",
   },
   home: {},
 });
+
+// console.log("ProdDetailCom", route.params.prod);
+// const [animatedValue] = useState(new Animated.Value(0));
+// const [textWidth, setTextWidth] = useState(0);
+// const [containerWidth, setContainerWidth] = useState(280);
+
+// useEffect(() => {
+//   generateHorizontalScrollAnimation();
+// }, [containerWidth, textWidth]);
+// const generateHorizontalScrollAnimation = () => {
+//   const scrollDistance = textWidth - containerWidth;
+//   if (scrollDistance > 0) {
+//     Animated.loop(
+//       Animated.timing(animatedValue, {
+//         toValue: -scrollDistance,
+//         duration: 5000,
+//         useNativeDriver: true,
+//         easing: Easing.linear,
+//       })
+//     ).start();
+//   }
+// };
+
+{
+  /* <Animated.Text
+            style={[
+              styles.navigateText,
+              {
+                transform: [
+                  {
+                    translateX: animatedValue,
+                  },
+                ],
+              },
+            ]}
+            onLayout={(event) => {
+              setTextWidth(300);
+            }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {title}
+          </Animated.Text> */
+}

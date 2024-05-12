@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
 
-export const Order = () => {
+export const OrderRecord = () => {
   return (
     <View>
-      <Text>Cart</Text>
+      <Text>ORder Record</Text>
     </View>
   );
 };

@@ -11,20 +11,30 @@ import {
 import { FlatList } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadProductData, showProduct } from "../redux/productSlice";
+import {
+  loadProductData,
+  setSelectedProduct,
+  showProduct,
+} from "../redux/productSlice";
 
 export const ProdList = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { productData, loading, error } = useSelector(showProduct);
+  const selectedCategory = useSelector(
+    (state) => state.category.selectedCategory
+  );
+  const products = selectedCategory
+    ? productData.filter((p) => p.category === selectedCategory)
+    : productData;
   useEffect(() => {
     dispatch(loadProductData());
   }, []);
 
-  const selectProd = (id) => {
-    const prod = productData.find((p) => p.id === id);
-    console.log(prod.title);
-    navigation.navigate("Detail", { prod });
+  const selectProd = (item) => {
+    dispatch(setSelectedProduct(item));
+    navigation.navigate("Detail");
+    // console.log("selected product", item);
     // navigation.setOptions({ title: prod.title });
   };
   return (
@@ -33,18 +43,15 @@ export const ProdList = () => {
         {!productData ? (
           <Button title="refresh" onPress={() => dispatch(loadProductData)} />
         ) : loading ? (
-          <ActivityIndicator size="large" color="blue" />
+          <ActivityIndicator size="large" color="grey" />
         ) : error ? (
           <Text>Error: {error}</Text>
         ) : (
           <FlatList
-            data={productData}
+            data={products}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Pressable
-                onPress={selectProd.bind(null, item.id)}
-                style={styles.item}
-              >
+              <Pressable onPress={() => selectProd(item)} style={styles.item}>
                 <View style={styles.detail}>
                   <View>
                     <Image source={{ uri: item.image }} style={styles.image} />
@@ -74,6 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
+    width: "100%",
   },
   heading: {},
   image: {

@@ -13,13 +13,10 @@ import { prodCom } from "./productCom";
 import { useSelector } from "react-redux";
 import { showProduct } from "../redux/productSlice";
 
-export const CatProdList = ({ route }) => {
+export const CatProdList = () => {
   const navigation = useNavigation();
   const { productData, loading, error } = useSelector(showProduct);
-
-  const category = route.params.category;
-
-  console.log(category);
+  const category = useSelector((state) => state.category.selectedCatelgory);
   const products = productData.filter((p) => p.category === category);
   const selectProd = (id) => {
     const prod = products.find((p) => p.id === id);

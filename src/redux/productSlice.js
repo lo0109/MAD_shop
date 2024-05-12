@@ -4,6 +4,7 @@ import { fetchProduct } from "../service/fetchAPI";
 // Define an initial state
 const initialState = {
   productData: [],
+  selectedProduct: null,
   loading: false,
   error: null,
 };
@@ -27,7 +28,11 @@ export const loadProductData = createAsyncThunk(
 const productSlice = createSlice({
   name: "product",
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedProduct: (state, action) => {
+      state.selectedProduct = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loadProductData.pending, (state) => {
@@ -47,3 +52,4 @@ const productSlice = createSlice({
 });
 export const showProduct = (state) => state.product;
 export default productSlice.reducer;
+export const { setSelectedProduct } = productSlice.actions;
