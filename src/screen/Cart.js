@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { Checkout } from "../component/Checkout";
-import { ShoppingCart } from "../component/ShoppingCart";
+import { Checkout } from "../component/checkout/Checkout";
+import { ShoppingCart } from "../component/cart/ShoppingCart";
 import { View } from "react-native";
 import { ImageButton } from "../component/imageButton";
 

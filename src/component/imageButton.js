@@ -1,7 +1,8 @@
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
-export const ImageButton = ({ icon, label, fun, color }) => {
+import { Badge, withBadge } from "@rneui/base";
+export const ImageButton = ({ icon, label, fun, color, badge, status }) => {
+  // const BadgedIcon = withBadge(2)(Ionicons);
   return (
     <Pressable
       style={({ pressed }) => (pressed ? { opacity: 0.5 } : {})}
@@ -9,6 +10,13 @@ export const ImageButton = ({ icon, label, fun, color }) => {
     >
       <View style={styles.container}>
         <Ionicons name={icon} size={40} color={color} />
+        {badge && (
+          <Badge
+            status={status}
+            value={badge}
+            containerStyle={{ position: "absolute", top: 5, left: 25 }}
+          />
+        )}
         <Text style={styles.text}>{label}</Text>
       </View>
     </Pressable>

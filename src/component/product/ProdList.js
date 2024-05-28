@@ -1,41 +1,57 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import {
+  ActivityIndicator,
   Button,
   Text,
   View,
   StyleSheet,
   Image,
   Pressable,
-  ActivityIndicator,
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import { prodCom } from "./productCom";
-import { useSelector } from "react-redux";
-import { showProduct } from "../redux/productSlice";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  loadProductData,
+  setSelectedProduct,
+  showProduct,
+} from "../../redux/productSlice";
 
-export const CatProdList = () => {
+export const ProdList = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { productData, loading, error } = useSelector(showProduct);
-  const category = useSelector((state) => state.category.selectedCatelgory);
-  const products = productData.filter((p) => p.category === category);
-  const selectProd = (id) => {
-    const prod = products.find((p) => p.id === id);
-    navigation.navigate("CatDetail", { prod });
+  const selectedCategory = useSelector(
+    (state) => state.category.selectedCategory
+  );
+  const products = selectedCategory
+    ? productData.filter((p) => p.category === selectedCategory)
+    : productData;
+  useEffect(() => {
+    dispatch(loadProductData());
+  }, []);
+
+  const selectProd = (item) => {
+    dispatch(setSelectedProduct(item));
+    navigation.navigate("Detail");
+    // console.log("selected product", item);
+    // navigation.setOptions({ title: prod.title });
   };
   return (
     <View style={styles.container}>
       <View style={styles.list}>
-        {loading ? (
-          <ActivityIndicator size="large" color="blue" />
+        {!productData ? (
+          <Button title="refresh" onPress={() => dispatch(loadProductData)} />
+        ) : loading ? (
+          <ActivityIndicator size="large" color="grey" />
+        ) : error ? (
+          <Text>Error: {error}</Text>
         ) : (
           <FlatList
             data={products}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-              <Pressable
-                onPress={selectProd.bind(null, item.id)}
-                style={styles.item}
-              >
+              <Pressable onPress={() => selectProd(item)} style={styles.item}>
                 <View style={styles.detail}>
                   <View>
                     <Image source={{ uri: item.image }} style={styles.image} />
@@ -65,6 +81,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "flex-start",
+    width: "100%",
   },
   heading: {},
   image: {

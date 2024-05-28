@@ -1,8 +1,11 @@
-const baseUrl = "https://fakestoreapi.com/";
+import { Platform } from "react-native";
+
+export const server = Platform.OS === "ios" ? "localhost" : "10.0.2.2";
+export const port = 3000;
 
 export const fetchCat = async () => {
   try {
-    const url = baseUrl + "products/categories";
+    const url = `http://${server}:${port}/products/categories`;
     const res = await fetch(url);
     const data = await res.json();
     return data;
@@ -13,7 +16,8 @@ export const fetchCat = async () => {
 
 export const fetchProduct = async () => {
   try {
-    const url = baseUrl + "products";
+    const url = `http://${server}:${port}/products`;
+    console.log(url);
     const res = await fetch(url);
     const data = await res.json();
     return data;

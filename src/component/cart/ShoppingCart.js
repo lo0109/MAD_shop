@@ -7,19 +7,41 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { ImageButton } from "./imageButton";
+import { ImageButton } from "../imageButton";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  cartItem,
   decreaseQuantity,
   increaseQuantity,
   removeItem,
-} from "../redux/cartSlice";
+  totalCart,
+} from "../../redux/cartSlice";
+import { useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { updateCart } from "../../service/cartService";
+import { authToken, userID } from "../../redux/loginSlice";
 
 export const ShoppingCart = ({ navigation }) => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
+  const token = useSelector(authToken);
+  const cartItems = useSelector(cartItem);
+  const uID = useSelector(userID);
+  const isFocus = useIsFocused();
+
+  useEffect(() => {
+    if (isFocus && !uID) {
+      Alert.alert("Please login to see the Shopping Cart.");
+      navigation.navigate("User");
+    }
+  }, [isFocus]);
+
+  useEffect(() => {
+    updateCart({ token, items: cartItems });
+  }, [cartItems]);
+
   const items = Object.values(cartItems);
-  const total = items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  // const total = items.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const total = useSelector(totalCart);
   const decreaseHandler = (id) => {
     if (cartItems[id].qty > 1) dispatch(decreaseQuantity({ id }));
     else {
@@ -63,7 +85,7 @@ export const ShoppingCart = ({ navigation }) => {
           <View style={styles.line} />
         </View>
         <View>
-          {items.length > 0 ? (
+          {total > 0 ? (
             <FlatList
               style={styles.list}
               data={items}
@@ -86,6 +108,8 @@ export const ShoppingCart = ({ navigation }) => {
                   <View style={styles.button}>
                     <Text style={styles.price}>Price: ${item.price}</Text>
                     <Text style={styles.price}>Qty: {item.qty}</Text>
+                  </View>
+                  <View>
                     <Text style={styles.subtotal}>
                       SubTotal: ${item.price * item.qty}
                     </Text>

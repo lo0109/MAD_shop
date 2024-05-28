@@ -2,7 +2,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View, StyleSheet } from "react-native";
 import { loadDataAndUpdate } from "../datamodel/data";
-import { catCom, prodCom } from "../component/productCom";
+import { catCom, prodCom } from "../component/product/productCom";
 export const CatList = ({ navigation }) => {
   const products = prodCom();
   const categories = catCom();

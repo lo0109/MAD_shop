@@ -36,6 +36,13 @@ const cartSlice = createSlice({
         state.items[id].qty -= 1; // Decrease the quantity of the item
       }
     },
+    fillCart(state, action) {
+      const { items } = action.payload;
+      state.items = [...items];
+    },
+    clearCart(state) {
+      state.items = {};
+    },
   },
 });
 
@@ -46,5 +53,21 @@ export const {
   decreaseQuantity,
   increaseQuantity,
 } = cartSlice.actions;
-
+export const cartItem = (state) => state.cart.items;
+export const fillCartFromFetch = (token) => async (dispatch) => {
+  try {
+    const data = await fetchCart({ token });
+    dispatch(fillCart({ items: data.items }));
+  } catch (e) {
+    console.log("Error in fillCartFromFetch", e.message);
+  }
+};
+export const totalCart = (state) => {
+  const items = Object.values(state.cart.items);
+  return items.reduce((acc, item) => acc + item.price * item.qty, 0);
+};
+export const totalQty = (state) => {
+  const items = Object.values(state.cart.items);
+  return items.reduce((acc, item) => acc + item.qty, 0);
+};
 export default cartSlice.reducer;

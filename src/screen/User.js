@@ -1,8 +1,8 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { UserProfile } from "../component/UserProfile";
-import { OrderRecord } from "../component/Order";
+import { OrderRecord } from "../component/user/Order";
 import { Button } from "react-native";
+import { UserPage } from "../component/user/UserProfile";
 import { ImageButton } from "../component/imageButton";
 const Tabs = createBottomTabNavigator();
 export const User = ({ navigation }) => {
@@ -13,7 +13,7 @@ export const User = ({ navigation }) => {
     <Tabs.Navigator screenOptions={{ headerShown: false }}>
       <Tabs.Screen
         name="UserProfile"
-        component={UserProfile}
+        component={UserPage}
         options={{
           headerShown: true,
           tabBarShowLabel: false,
@@ -34,6 +34,7 @@ export const User = ({ navigation }) => {
             <Ionicons name="time-outline" color={color} size={40} />
           ),
           tabBarBadge: "3" || undefined,
+          headerLeft: () => <ImageButton icon="menu-outline" fun={menu} />,
         }}
       />
     </Tabs.Navigator>

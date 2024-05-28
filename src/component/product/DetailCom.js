@@ -11,20 +11,19 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
-import { setSelectedCategory } from "../redux/catSlice";
-import { setSelectedProduct } from "../redux/productSlice";
-import { ImageButton } from "./imageButton";
-import { addItemToCart } from "../redux/cartSlice";
+import { setSelectedCategory } from "../../redux/catSlice";
+import { setSelectedProduct } from "../../redux/productSlice";
+import { ImageButton } from "../imageButton";
+import { addItemToCart, cartItem } from "../../redux/cartSlice";
 export const ProdDetailCom = ({ navigation }) => {
+  const dispatch = useDispatch();
   const product = useSelector((state) => state.product.selectedProduct);
-  const cartItems = useSelector((state) => state.cart.items) ?? {};
-
+  const cartItems = useSelector(cartItem);
   const { id, image, title, price, description, category, rating } = product;
   const [loading, setloading] = useState(true);
-  const dispatch = useDispatch();
 
-  const itemInCart = cartItems[id] ? true : false;
-
+  const itemInCart = cartItems[id];
+  const qty = itemInCart ? itemInCart["qty"] : null;
   return (
     <View style={styles.container}>
       <View style={styles.navigation}>
@@ -74,23 +73,36 @@ export const ProdDetailCom = ({ navigation }) => {
               <Text>Rating: {rating.rate}</Text>
             </View>
           </View>
-          <View>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             {itemInCart ? (
-              <Text>Item in Cart</Text>
-            ) : (
-              <ImageButton
-                icon="cart-outline"
-                fun={() => {
-                  dispatch(
-                    addItemToCart({
-                      id: id,
-                      item: { id, title, price, image, qty: 1 },
-                    })
-                  );
-                  navigation.navigate("Cart");
-                }}
-              />
-            )}
+              <View>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    color: "blue",
+                    fontSize: 20,
+                  }}
+                >
+                  {qty}
+                </Text>
+                <Text>in Cart</Text>
+              </View>
+            ) : null}
+            <ImageButton
+              icon="cart-outline"
+              fun={() => {
+                dispatch(
+                  addItemToCart({
+                    id: id,
+                    item: { id, title, price, image, qty: qty ? qty + 1 : 1 },
+                  })
+                );
+                {
+                  qty == 0 ? navigation.navigate("Cart") : null;
+                }
+              }}
+            />
           </View>
         </View>
       </View>

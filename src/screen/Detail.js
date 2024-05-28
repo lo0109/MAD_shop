@@ -1,16 +1,15 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Button, StyleSheet, Text, View } from "react-native";
-import { ProdDetailCom } from "../component/DetailCom";
+import { ProdDetailCom } from "../component/product/DetailCom";
 import { Ionicons } from "@expo/vector-icons";
-import { Comment } from "../component/Comment";
-import { ShoppingCart } from "../component/ShoppingCart";
+import { Comment } from "../component/product/Comment";
+import { ShoppingCart } from "../component/cart/ShoppingCart";
 import { useSelector } from "react-redux";
+import { totalQty } from "../redux/cartSlice";
 const Tabs = createBottomTabNavigator();
 
 export const DetailNav = () => {
-  const cartItems = useSelector((state) => state.cart.items);
-  const items = Object.values(cartItems);
-  const totalItems = items.reduce((acc, item) => acc + item.qty, 0);
+  const totalItems = useSelector(totalQty);
 
   return (
     <Tabs.Navigator screenOptions={{ headerShown: false }}>

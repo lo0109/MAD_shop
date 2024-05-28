@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { ImageButton } from "./imageButton";
+import { ImageButton } from "../imageButton";
 export const Checkout = ({ navigation }) => {
   return (
     <View>

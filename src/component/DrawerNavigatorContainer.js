@@ -22,7 +22,8 @@ import {
 import { Cart } from "../screen/Cart";
 import { useNavigation } from "@react-navigation/native";
 import { User } from "../screen/User";
-
+import { UserProfile } from "../screen/UserPage";
+import { totalQty } from "../redux/cartSlice";
 const Drawer = createDrawerNavigator();
 const CustomDrawerContent = ({
   navigation,
@@ -102,7 +103,7 @@ const CustomDrawerContent = ({
           </Text>
         </Pressable> */}
 
-        <Pressable onPress={() => navigation.navigate("Login")}>
+        <Pressable onPress={() => navigation.navigate("User")}>
           <Text
             style={[
               styles.drawerContent,
@@ -124,8 +125,9 @@ export const DrawerNavigatorContainer = () => {
     navigation.navigate("Cart");
   };
   const userNavigation = () => {
-    navigation.navigate("Login");
+    navigation.navigate("User");
   };
+  const badge = useSelector(totalQty);
   return (
     <Drawer.Navigator
       drawerContent={(props) => (
@@ -142,7 +144,11 @@ export const DrawerNavigatorContainer = () => {
         options={{
           headerRight: () => (
             <View style={{ flexDirection: "row" }}>
-              <ImageButton icon="cart-outline" fun={cartNavigation} />
+              <ImageButton
+                icon="cart-outline"
+                fun={cartNavigation}
+                badge={badge}
+              />
               <ImageButton icon="person-outline" fun={userNavigation} />
             </View>
           ),
@@ -170,8 +176,8 @@ export const DrawerNavigatorContainer = () => {
         }}
       /> */}
       <Drawer.Screen
-        name="Login"
-        component={User}
+        name="User"
+        component={UserProfile}
         options={{
           headerShown: false,
         }}

@@ -1,15 +1,9 @@
-import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button, Pressable } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
-import { CatList } from "../trash/CatList";
 import { createStackNavigator } from "@react-navigation/stack";
-import { DetailNav } from "./Detail";
-import { CatProdList } from "../component/CatProdList";
-import { ProdList } from "../component/ProdList";
-import { useDispatch, useSelector } from "react-redux";
-import { setSelectedCategory } from "../redux/catSlice";
+import { ProdList } from "../component/product/ProdList";
+import { useSelector } from "react-redux";
 import { ImageButton } from "../component/imageButton";
+import { totalQty } from "../redux/cartSlice";
 
 const Stack = createStackNavigator();
 
@@ -21,8 +15,9 @@ export const Category = ({ navigation }) => {
     navigation.navigate("Cart");
   };
   const userNavigation = () => {
-    navigation.navigate("Login");
+    navigation.navigate("User");
   };
+  const badge = useSelector(totalQty);
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -34,7 +29,11 @@ export const Category = ({ navigation }) => {
           title: selectedCategory,
           headerRight: () => (
             <View style={{ flexDirection: "row" }}>
-              <ImageButton icon="cart-outline" fun={cartNavigation} />
+              <ImageButton
+                icon="cart-outline"
+                fun={cartNavigation}
+                badge={badge}
+              />
               <ImageButton icon="person-outline" fun={userNavigation} />
             </View>
           ),

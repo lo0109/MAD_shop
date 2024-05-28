@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { loadCatDataAndUpdate, loadProdDataAndUpdate } from "../datamodel/data";
+import {
+  loadCatDataAndUpdate,
+  loadProdDataAndUpdate,
+} from "../../datamodel/data";
 import { useIsFocused } from "@react-navigation/native";
 
 export const prodCom = () => {
