@@ -1,89 +1,98 @@
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Button,
-  Image,
-  Alert,
-} from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
 import { ImageButton } from "../imageButton";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  cartItem,
+  cartItems,
+  clearCart,
   decreaseQuantity,
   increaseQuantity,
   removeItem,
   totalCart,
 } from "../../redux/cartSlice";
-import { useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import { updateCart } from "../../service/cartService";
 import { authToken, userID } from "../../redux/loginSlice";
+import { addItemToOrder } from "../../redux/orderSlice";
+import { checkOut } from "../../service/checkoutService";
 
 export const ShoppingCart = ({ navigation }) => {
   const dispatch = useDispatch();
   const token = useSelector(authToken);
-  const cartItems = useSelector(cartItem);
+  const items = useSelector(cartItems);
   const uID = useSelector(userID);
-  const isFocus = useIsFocused();
-
+  const isFocused = useIsFocused();
   useEffect(() => {
-    if (isFocus && !uID) {
+    if (isFocused && !uID) {
       Alert.alert("Please login to see the Shopping Cart.");
       navigation.navigate("User");
     }
-  }, [isFocus]);
+  }, [isFocused]);
 
   useEffect(() => {
-    updateCart({ token, items: cartItems });
-  }, [cartItems]);
+    updateCart({ token, items });
+  }, [items, token]);
 
-  const items = Object.values(cartItems);
-  // const total = items.reduce((acc, item) => acc + item.price * item.qty, 0);
   const total = useSelector(totalCart);
-  const decreaseHandler = (id) => {
-    if (cartItems[id].qty > 1) dispatch(decreaseQuantity({ id }));
-    else {
-      Alert.alert(
-        "Remove Item",
-        `Are you sure you want to remove ${cartItems[id].title}?`,
-        [
-          { text: "Cancel" },
-          {
-            text: "Confirm",
-            onPress: () => {
-              dispatch(removeItem({ id }));
-            },
-          }, // Remove the item from the state by its ID
-        ]
-      );
-    }
-  };
-  const deleteHandler = (id) => {
-    Alert.alert(
-      "Remove Item",
-      `Are you sure you want to remove ${cartItems[id].title}?`,
-      [
+
+  const decreaseHandler = (id, qty, title) => {
+    if (qty > 1) {
+      dispatch(decreaseQuantity({ id }));
+    } else {
+      Alert.alert("Remove Item", `Are you sure you want to remove ${title}?`, [
         { text: "Cancel" },
         {
           text: "Confirm",
           onPress: () => {
             dispatch(removeItem({ id }));
           },
-        }, // Remove the item from the state by its ID
-      ]
-    );
+        },
+      ]);
+    }
   };
+
+  const deleteHandler = (id, title) => {
+    Alert.alert("Remove Item", `Are you sure you want to remove ${title}?`, [
+      { text: "Cancel" },
+      {
+        text: "Confirm",
+        onPress: () => {
+          dispatch(removeItem({ id }));
+        },
+      },
+    ]);
+  };
+
+  const checkoutHandler = async () => {
+    try {
+      const data = await checkOut({ token, items });
+      if (data.status === "OK") {
+        const orderId = data.id;
+        dispatch(clearCart());
+        dispatch(
+          addItemToOrder({
+            id: orderId,
+            order: items,
+            isPaid: 0,
+            isDelivered: 0,
+          })
+        );
+        Alert.alert("Checkout successfully.");
+      } else {
+        Alert.alert("Checkout failed.", data.message);
+      }
+    } catch (e) {
+      Alert.alert("Checkout failed", e.message);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View>
         <View style={styles.heading}>
           <Text style={styles.titleText}>Shopping Cart</Text>
         </View>
-        <View>
-          <View style={styles.line} />
-        </View>
+        <View style={styles.line} />
         <View>
           {total > 0 ? (
             <FlatList
@@ -93,27 +102,16 @@ export const ShoppingCart = ({ navigation }) => {
               renderItem={({ item }) => (
                 <View style={styles.item}>
                   <View style={styles.product}>
-                    <View>
-                      <Image
-                        source={{ uri: item.image }}
-                        style={styles.image}
-                      />
-                    </View>
-                    <View>
-                      <View>
-                        <Text style={styles.title}>{item.title} </Text>
-                      </View>
-                    </View>
+                    <Image source={{ uri: item.image }} style={styles.image} />
+                    <Text style={styles.title}>{item.title}</Text>
                   </View>
                   <View style={styles.button}>
                     <Text style={styles.price}>Price: ${item.price}</Text>
                     <Text style={styles.price}>Qty: {item.qty}</Text>
                   </View>
-                  <View>
-                    <Text style={styles.subtotal}>
-                      SubTotal: ${item.price * item.qty}
-                    </Text>
-                  </View>
+                  <Text style={styles.subtotal}>
+                    SubTotal: ${item.price * item.qty}
+                  </Text>
                   <View style={styles.line} />
                   <View style={styles.button}>
                     <ImageButton
@@ -123,13 +121,12 @@ export const ShoppingCart = ({ navigation }) => {
                     />
                     <ImageButton
                       icon={"remove-circle-outline"}
-                      fun={() => decreaseHandler(item.id)}
+                      fun={() => decreaseHandler(item.id, item.qty, item.title)}
                       color={"red"}
                     />
-
                     <ImageButton
                       icon={"trash-outline"}
-                      fun={() => deleteHandler(item.id)}
+                      fun={() => deleteHandler(item.id, item.title)}
                     />
                   </View>
                 </View>
@@ -142,19 +139,19 @@ export const ShoppingCart = ({ navigation }) => {
           )}
         </View>
       </View>
-
       <View style={styles.bottom}>
-        <Text style={styles.titleText}> Total: {total}</Text>
+        <Text style={styles.titleText}> Total: ${total}</Text>
         <ImageButton
           label="Checkout"
           icon={"card-outline"}
-          fun={() => navigation.navigate("Checkout")}
+          fun={checkoutHandler}
           color={"green"}
         />
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -162,7 +159,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-around",
   },
-
   heading: {
     flexDirection: "row",
     justifyContent: "center",
@@ -190,7 +186,9 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "black",
   },
-  list: { height: "90%" },
+  list: {
+    height: "90%",
+  },
   item: {
     padding: 10,
     backgroundColor: "lightgrey",
@@ -201,7 +199,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
-    // backgroundColor: "red",
   },
   title: {
     width: 250,
@@ -225,3 +222,5 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
 });
+
+export default ShoppingCart;

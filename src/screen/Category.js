@@ -18,12 +18,14 @@ export const Category = ({ navigation }) => {
     navigation.navigate("User");
   };
   const badge = useSelector(totalQty);
+  console.log("badge", badge);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="CatProduct"
         component={ProdList}
-        // initialParams={{ selectedCategory }}
+        // initialParams={(home = false)}
         options={{
           headerShown: true,
           title: selectedCategory,

@@ -57,6 +57,7 @@ export const ChangeDetail = ({ navigation }) => {
               placeholder: "New Password",
               value: input.password,
               onChangeText: inputHandler.bind(null, "password"),
+              secureTextEntry: true,
             }}
           />
         </View>
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   text: { fontSize: 20, width: 100, textAlign: "center" },
   user: {
     fontSize: 20,
-    fontStyle: "bold",
+    fontWeight: "bold",
     width: 250,
   },
 });

@@ -10,7 +10,7 @@ export const ImageButton = ({ icon, label, fun, color, badge, status }) => {
     >
       <View style={styles.container}>
         <Ionicons name={icon} size={40} color={color} />
-        {badge && (
+        {badge > 0 && (
           <Badge
             status={status}
             value={badge}

@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Alert } from "react-native";
+import { fetchCart } from "../service/cartService";
 
 const initialState = {
-  items: {}, // Object of items in the cart, keyed by item ID
+  items: [],
+  // Array of items in the cart
 };
 
 const cartSlice = createSlice({
@@ -10,38 +11,40 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addItemToCart(state, action) {
-      const { id, item } = action.payload;
-      state.items[id] = item; // Assign the item to the state by its ID
+      const item = action.payload;
+      state.items.push(item); // Add the item to the array
     },
     removeItem(state, action) {
       const { id } = action.payload;
-      delete state.items[id];
+      state.items = state.items.filter((item) => item.id !== id); // Remove the item by filtering the array
     },
-
     updateItemQuantity(state, action) {
       const { id, quantity } = action.payload;
-      if (state.items[id]) {
-        state.items[id].qty = quantity; // Update the quantity of the item
+      const item = state.items.find((item) => item.id === id);
+      if (item) {
+        item.qty = quantity; // Update the quantity of the item
       }
     },
     increaseQuantity(state, action) {
       const { id } = action.payload;
-      if (state.items[id]) {
-        state.items[id].qty += 1; // Increase the quantity of the item
+      const item = state.items.find((item) => item.id === id);
+      if (item) {
+        item.qty += 1; // Increase the quantity of the item
       }
     },
     decreaseQuantity(state, action) {
       const { id } = action.payload;
-      if (state.items[id] && state.items[id].qty > 1) {
-        state.items[id].qty -= 1; // Decrease the quantity of the item
+      const item = state.items.find((item) => item.id === id);
+      if (item && item.qty > 1) {
+        item.qty -= 1; // Decrease the quantity of the item
       }
     },
     fillCart(state, action) {
       const { items } = action.payload;
-      state.items = [...items];
+      state.items = items; // Replace the entire array of items
     },
     clearCart(state) {
-      state.items = {};
+      state.items = []; // Clear the array of items
     },
   },
 });
@@ -52,22 +55,28 @@ export const {
   updateItemQuantity,
   decreaseQuantity,
   increaseQuantity,
+  fillCart,
+  clearCart,
 } = cartSlice.actions;
-export const cartItem = (state) => state.cart.items;
+
+export const cartItems = (state) => state.cart.items;
+
+export const totalCart = (state) => {
+  return state.cart.items.reduce((acc, item) => acc + item.price * item.qty, 0);
+};
+
+export const totalQty = (state) => {
+  return state.cart.items.reduce((acc, item) => acc + item.qty, 0);
+};
+
 export const fillCartFromFetch = (token) => async (dispatch) => {
   try {
     const data = await fetchCart({ token });
+    console.log("data", data.items);
     dispatch(fillCart({ items: data.items }));
   } catch (e) {
     console.log("Error in fillCartFromFetch", e.message);
   }
 };
-export const totalCart = (state) => {
-  const items = Object.values(state.cart.items);
-  return items.reduce((acc, item) => acc + item.price * item.qty, 0);
-};
-export const totalQty = (state) => {
-  const items = Object.values(state.cart.items);
-  return items.reduce((acc, item) => acc + item.qty, 0);
-};
+
 export default cartSlice.reducer;

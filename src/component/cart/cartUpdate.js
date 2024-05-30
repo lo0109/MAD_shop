@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { cartItem } from "../../redux/cartSlice";
+import { cartItems } from "../../redux/cartSlice";
 import { updateCart } from "../../service/cartService";
 
 export default function CartUpdate({ prodId }) {
   const [prod, setProduct] = useState({});
-  const itms = useSelector(cartItem);
+  const itms = useSelector(cartItems);
   const itm = itms.find((i) => i.id === prodId);
   const count = itm?.count ?? 0;
   const dispatch = useDispatch();

@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { View, Text, Alert, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Input } from "../Input";
-import { fetchCart } from "../../service/cartService";
 import { signinUser, signupUser } from "../../service/authService";
-import { fillCartFromFetch } from "../../redux/cartSlice";
+import { fillCart, fillCartFromFetch } from "../../redux/cartSlice";
 import { login } from "../../redux/loginSlice";
 import Button from "../Button";
+import { fetchOrder } from "../../service/orderService";
+import { fillOrder, fillOrderFromFetch } from "../../redux/orderSlice";
+import { fetchCart } from "../../service/cartService";
+
 const signInText = {
   title: "Sign in with email and password",
   button: "Sign in",
@@ -29,12 +32,13 @@ export const LoginForm = () => {
   const [form, setForm] = useState(signInText);
   const dispatch = useDispatch();
   const restoreOrder = async ({ token }) => {
-    const data = await fetchOrders({ token });
-    if (data.status === "OK") {
-      dispatch(fillOrders({ orders: data.orders }));
-    } else {
-      Alert.alert("Fail to restoreOrder", data.message);
-    }
+    // const data = await fetchOrder({ token });
+    // if (data.status === "OK") {
+    //   dispatch(fillOrder({ orders: data.orders }));
+    // } else {
+    //   Alert.alert("Fail to restoreOrder", data.message);
+    // }
+    dispatch(fillOrderFromFetch(token));
   };
   const restoreCart = async ({ token }) => {
     // const data = await fetchCart({ token });
@@ -75,6 +79,7 @@ export const LoginForm = () => {
       );
       restoreOrder({ token: data.token });
       restoreCart({ token: data.token });
+      console.log(data.token);
     } else {
       Alert.alert("Fail to submit", data.message);
     }
@@ -108,6 +113,7 @@ export const LoginForm = () => {
                 placeholder: "Password",
                 value: input.password,
                 onChangeText: inputHandler.bind(null, "password"),
+                secureTextEntry: true,
               }}
             />
           </View>
@@ -128,6 +134,7 @@ export const LoginForm = () => {
                 placeholder: "Password",
                 value: input.password,
                 onChangeText: inputHandler.bind(null, "password"),
+                secureTextEntry: true,
               }}
             />
           </View>

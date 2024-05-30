@@ -33,7 +33,6 @@ export const User = ({ navigation }) => {
           tabBarIcon: ({ size, color }) => (
             <Ionicons name="time-outline" color={color} size={40} />
           ),
-          tabBarBadge: "3" || undefined,
           headerLeft: () => <ImageButton icon="menu-outline" fun={menu} />,
         }}
       />

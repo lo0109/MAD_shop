@@ -3,13 +3,17 @@ import { LoginForm } from "../login/loginForm";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, userEmail, userID, userName } from "../../redux/loginSlice";
 import Button from "../Button";
+import { clearCart } from "../../redux/cartSlice";
 
 export const UserPage = ({ navigation }) => {
   const dispatch = useDispatch();
   const uID = useSelector(userID);
   const name = useSelector(userName);
   const email = useSelector(userEmail);
-
+  const logoutHandler = () => {
+    dispatch(logout());
+    dispatch(clearCart());
+  };
   return (
     <View>
       {!uID && <LoginForm />}
@@ -37,7 +41,7 @@ export const UserPage = ({ navigation }) => {
               title="Update Profile"
               onPress={() => navigation.navigate("ChangeDetail")}
             />
-            <Button title="Logout" onPress={() => dispatch(logout())} />
+            <Button title="Logout" onPress={logoutHandler} />
           </View>
         </View>
       )}
@@ -67,6 +71,6 @@ const styles = StyleSheet.create({
   text: { fontSize: 15, width: 80, textAlign: "center" },
   user: {
     fontSize: 20,
-    fontStyle: "bold",
+    fontWeight: "bold",
   },
 });
