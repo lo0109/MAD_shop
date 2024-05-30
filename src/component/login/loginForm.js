@@ -7,7 +7,7 @@ import { fillCart, fillCartFromFetch } from "../../redux/cartSlice";
 import { login } from "../../redux/loginSlice";
 import Button from "../Button";
 import { fetchOrder } from "../../service/orderService";
-import { fillOrder, fillOrderFromFetch } from "../../redux/orderSlice";
+import { fillOrderFromFetch } from "../../redux/orderSlice";
 import { fetchCart } from "../../service/cartService";
 
 const signInText = {

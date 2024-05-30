@@ -31,7 +31,7 @@ export const ShoppingCart = ({ navigation }) => {
 
   useEffect(() => {
     updateCart({ token, items });
-  }, [items, token]);
+  }, [items]);
 
   const total = useSelector(totalCart);
 
@@ -65,7 +65,11 @@ export const ShoppingCart = ({ navigation }) => {
 
   const checkoutHandler = async () => {
     try {
-      const data = await checkOut({ token, items });
+      const data = await checkOut({
+        token,
+        items,
+      });
+      console.log("inside handler", data);
       if (data.status === "OK") {
         const orderId = data.id;
         dispatch(clearCart());
@@ -79,7 +83,7 @@ export const ShoppingCart = ({ navigation }) => {
         );
         Alert.alert("Checkout successfully.");
       } else {
-        Alert.alert("Checkout failed.", data.message);
+        Alert.alert("Checkout data failed.", data.message);
       }
     } catch (e) {
       Alert.alert("Checkout failed", e.message);
@@ -144,7 +148,7 @@ export const ShoppingCart = ({ navigation }) => {
         <ImageButton
           label="Checkout"
           icon={"card-outline"}
-          fun={checkoutHandler}
+          fun={() => checkoutHandler()}
           color={"green"}
         />
       </View>

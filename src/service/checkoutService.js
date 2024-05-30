@@ -2,6 +2,7 @@ import { port, server } from "./fetchAPI";
 
 export const checkOut = async ({ token, items }) => {
   const url = `http://${server}:${port}/orders/neworder`;
+  console.log("inside service", items);
   try {
     const res = await fetch(url, {
       method: "POST",
