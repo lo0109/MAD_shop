@@ -66,7 +66,18 @@ export const ProdList = () => {
           <View style={{ marginBottom: 60 }}>
             <View>
               {!selectedCategory ? (
-                <Text style={styles.title}>Today's Top Picks</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <Text style={styles.title}>Today's Top Picks</Text>
+                  <Button
+                    title="refresh"
+                    onPress={() => dispatch(loadProductData)}
+                  />
+                </View>
               ) : (
                 <ImageButton
                   icon={"arrow-back"}

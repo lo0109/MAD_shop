@@ -31,7 +31,7 @@ export const LoginForm = () => {
   const [input, setInput] = useState(initialInput);
   const [form, setForm] = useState(signInText);
   const dispatch = useDispatch();
-  const restoreOrder = async ({ token }) => {
+  const restoreOrder = ({ token }) => {
     // const data = await fetchOrder({ token });
     // if (data.status === "OK") {
     //   dispatch(fillOrder({ orders: data.orders }));
@@ -40,7 +40,7 @@ export const LoginForm = () => {
     // }
     dispatch(fillOrderFromFetch(token));
   };
-  const restoreCart = async ({ token }) => {
+  const restoreCart = ({ token }) => {
     // const data = await fetchCart({ token });
     // if (data.status === "OK") {
     //   dispatch(fillCart({ items: data.items }));

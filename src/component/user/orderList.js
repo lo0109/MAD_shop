@@ -13,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 export const OrderList = ({ order, text }) => {
   const [toggle, setToggle] = useState(true); // Changed to a more conventional name
   const items = JSON.parse(order);
+  console.log("inlist", items);
   return (
     <View>
       <Pressable onPress={() => setToggle(!toggle)}>

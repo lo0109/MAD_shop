@@ -11,7 +11,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { authToken, userID } from "../../redux/loginSlice";
 import { ImageButton } from "../imageButton";
-import { orderRecord, payOrder, receiveOrder } from "../../redux/orderSlice";
+import {
+  fillOrderFromFetch,
+  orderRecord,
+  payOrder,
+  payOrderToSever,
+  recOrderToSever,
+  receiveOrder,
+} from "../../redux/orderSlice";
 import { fillCartFromFetch } from "../../redux/cartSlice";
 import { OrderList } from "./orderList";
 import { updateOrder } from "../../service/orderService";
@@ -22,63 +29,18 @@ export const OrderRecord = ({ navigation }) => {
   const [togglepay, setIstogglepay] = useState(true);
   const [togglerec, setIstogglerec] = useState(true);
   const [togglecom, setIstogglecom] = useState(true);
-  console.log(token);
   const dispatch = useDispatch();
   const orders = useSelector(orderRecord);
+  const keyExtractor = (item) => item.id.toString();
   useEffect(() => {
     if (isFocus && !uID) {
       Alert.alert("Please login to see the Order.");
       navigation.goBack();
     } else {
-      dispatch(fillCartFromFetch(token));
+      dispatch(fillOrderFromFetch(token));
     }
   }, [isFocus]);
-  const payOrdehandler = async ({ item, id }) => {
-    try {
-      const data = await updateOrder({
-        token,
-        item,
-      });
-      if (data.status === "OK") {
-        Alert.alert("Pay order?", [
-          { text: "Cancel" },
-          {
-            text: "Confirm",
-            // onPress: () => {
-            //   dispatch(payOrder({ id }));
-            // },
-          },
-        ]);
-      } else {
-        Alert.alert("payment failed.", data.message);
-      }
-    } catch (e) {
-      Alert.alert("payment failed", e.message);
-    }
-  };
-  const receiveOrdehandler = async ({ item, id }) => {
-    try {
-      const data = await updateOrder({
-        token,
-        item,
-      });
-      if (data.status === "OK") {
-        Alert.alert("Pay order?", [
-          { text: "Cancel" },
-          {
-            text: "Confirm",
-            // onPress: () => {
-            //   dispatch(payOrder({ id }));
-            // },
-          },
-        ]);
-      } else {
-        Alert.alert("payment failed.", data.message);
-      }
-    } catch (e) {
-      Alert.alert("payment failed", e.message);
-    }
-  };
+
   return (
     <View>
       <Text style={styles.title}>Your Order Record</Text>
@@ -94,11 +56,11 @@ export const OrderRecord = ({ navigation }) => {
         >
           <Text style={styles.titleText}>Pending payment</Text>
         </Pressable>
-        {togglepay ? null : (
+        {!togglepay && (
           <FlatList
             style={styles.list}
             data={orders}
-            keyExtractor={orders.id}
+            keyExtractor={keyExtractor}
             renderItem={({ item }) =>
               item.is_paid == 0 ? (
                 <View style={styles.item}>
@@ -116,15 +78,13 @@ export const OrderRecord = ({ navigation }) => {
                       icon={"card-outline"}
                       label="Check Out"
                       color={"green"}
-                      fun={
-                        () => {
-                          dispatch(payOrder(item.id));
-                        }
+                      fun={() => {
+                        dispatch(payOrderToSever({ token, id: item.id }));
                         // payOrdehandler({
                         //   item: JSON.parse(item.order_items),
                         //   id: item.id,
-                        // })
-                      }
+                        // });
+                      }}
                     />
                   </View>
                   <View style={styles.line} />
@@ -137,6 +97,7 @@ export const OrderRecord = ({ navigation }) => {
           />
         )}
       </View>
+
       <View
         style={(styles.item, { backgroundColor: "yellow", borderRadius: 15 })}
       >
@@ -149,11 +110,11 @@ export const OrderRecord = ({ navigation }) => {
         >
           <Text style={styles.titleText}>Pending received</Text>
         </Pressable>
-        {togglerec ? null : (
+        {!togglerec && (
           <FlatList
             style={styles.list}
             data={orders}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={keyExtractor}
             renderItem={({ item }) =>
               item.is_paid == 1 && item.is_delivered == 0 ? (
                 <View style={styles.item}>
@@ -174,7 +135,16 @@ export const OrderRecord = ({ navigation }) => {
                       icon={"checkbox-outline"}
                       label="Received"
                       color={"green"}
-                      fun={() => dispatch(receiveOrder(item.id))}
+                      fun={() => {
+                        // dispatch(receiveOrder(item.id));
+                        // Alert.alert("Received successfully.");
+                        dispatch(
+                          recOrderToSever({
+                            token,
+                            id: item.id,
+                          })
+                        );
+                      }}
                     />
                   </View>
                   <View style={styles.line} />
@@ -200,11 +170,11 @@ export const OrderRecord = ({ navigation }) => {
         >
           <Text style={styles.titleText}>Completed Orders</Text>
         </Pressable>
-        {togglecom ? null : (
+        {!togglecom && (
           <FlatList
             style={styles.list}
             data={orders}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={keyExtractor}
             renderItem={({ item }) =>
               item.is_delivered == 1 ? (
                 <View style={styles.item}>

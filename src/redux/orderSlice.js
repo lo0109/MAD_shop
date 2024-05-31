@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchOrder } from "../service/orderService";
+import { fetchOrder, updateOrder } from "../service/orderService";
+import { Alert } from "react-native";
 
 const initialState = {
   orders: [],
@@ -10,10 +11,10 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     addItemToOrder(state, action) {
-      state.orders.push(action.payload);
+      state.orders.push(JSON.parse(action.payload));
     },
     fillOrder(state, action) {
-      state.orders = action.payload.orders;
+      state.orders = action.payload.orders || [];
     },
     payOrder(state, action) {
       const id = action.payload;
@@ -25,8 +26,6 @@ const orderSlice = createSlice({
     receiveOrder(state, action) {
       const id = action.payload;
       const order = state.orders.find((order) => order.id === id);
-      console.log(id, "inside slice", order);
-
       if (order) {
         order.is_delivered = 1;
       }
@@ -37,6 +36,7 @@ const orderSlice = createSlice({
 export const { addItemToOrder, fillOrder, payOrder, receiveOrder } =
   orderSlice.actions;
 
+export const orderRecord = (state) => state.order.orders;
 export const fillOrderFromFetch = (token) => async (dispatch) => {
   try {
     const data = await fetchOrder({ token });
@@ -46,6 +46,54 @@ export const fillOrderFromFetch = (token) => async (dispatch) => {
   }
 };
 
-export const orderRecord = (state) => state.order.orders;
+export const payOrderToSever =
+  ({ token, id }) =>
+  async (dispatch) => {
+    try {
+      dispatch(payOrder(id));
+      try {
+        const data = await updateOrder({
+          token,
+          orderID: id,
+          isPaid: 1,
+          isDelivered: 0,
+        });
+        if (data.status === "OK") {
+          Alert.alert("Pay successfully.");
+        } else {
+          Alert.alert("payment failed.", data.message);
+        }
+      } catch (e) {
+        Alert.alert("payment failed", e.message);
+      }
+    } catch (e) {
+      console.log("Error in payOrderToSever", e.message);
+    }
+  };
+
+export const recOrderToSever =
+  ({ token, id }) =>
+  async (dispatch) => {
+    try {
+      dispatch(receiveOrder(id));
+      try {
+        const data = await updateOrder({
+          token,
+          orderID: id,
+          isPaid: 1,
+          isDelivered: 1,
+        });
+        if (data.status === "OK") {
+          Alert.alert("Received successfully.");
+        } else {
+          Alert.alert("Received failed.", data.message);
+        }
+      } catch (e) {
+        Alert.alert("Received failed", e.message);
+      }
+    } catch (e) {
+      console.log("Error in payOrderToSever", e.message);
+    }
+  };
 
 export default orderSlice.reducer;
