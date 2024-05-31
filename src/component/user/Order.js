@@ -11,8 +11,10 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { authToken, userID } from "../../redux/loginSlice";
 import { ImageButton } from "../imageButton";
-import { orderRecord } from "../../redux/orderSlice";
-
+import { orderRecord, payOrder, receiveOrder } from "../../redux/orderSlice";
+import { fillCartFromFetch } from "../../redux/cartSlice";
+import { OrderList } from "./orderList";
+import { updateOrder } from "../../service/orderService";
 export const OrderRecord = ({ navigation }) => {
   const isFocus = useIsFocused();
   const uID = useSelector(userID);
@@ -27,10 +29,55 @@ export const OrderRecord = ({ navigation }) => {
     if (isFocus && !uID) {
       Alert.alert("Please login to see the Order.");
       navigation.goBack();
+    } else {
+      dispatch(fillCartFromFetch(token));
     }
   }, [isFocus]);
-  const payOrder = ({ id }) => {
-    dispatch();
+  const payOrdehandler = async ({ item, id }) => {
+    try {
+      const data = await updateOrder({
+        token,
+        item,
+      });
+      if (data.status === "OK") {
+        Alert.alert("Pay order?", [
+          { text: "Cancel" },
+          {
+            text: "Confirm",
+            // onPress: () => {
+            //   dispatch(payOrder({ id }));
+            // },
+          },
+        ]);
+      } else {
+        Alert.alert("payment failed.", data.message);
+      }
+    } catch (e) {
+      Alert.alert("payment failed", e.message);
+    }
+  };
+  const receiveOrdehandler = async ({ item, id }) => {
+    try {
+      const data = await updateOrder({
+        token,
+        item,
+      });
+      if (data.status === "OK") {
+        Alert.alert("Pay order?", [
+          { text: "Cancel" },
+          {
+            text: "Confirm",
+            // onPress: () => {
+            //   dispatch(payOrder({ id }));
+            // },
+          },
+        ]);
+      } else {
+        Alert.alert("payment failed.", data.message);
+      }
+    } catch (e) {
+      Alert.alert("payment failed", e.message);
+    }
   };
   return (
     <View>
@@ -38,40 +85,51 @@ export const OrderRecord = ({ navigation }) => {
       <View
         style={(styles.item, { backgroundColor: "orange", borderRadius: 15 })}
       >
-        <Pressable onPress={() => setIstogglepay(!togglepay)}>
+        <Pressable
+          onPress={() => {
+            setIstogglepay(!togglepay);
+            setIstogglecom(true);
+            setIstogglerec(true);
+          }}
+        >
           <Text style={styles.titleText}>Pending payment</Text>
         </Pressable>
         {togglepay ? null : (
           <FlatList
             style={styles.list}
             data={orders}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={orders.id}
             renderItem={({ item }) =>
               item.is_paid == 0 ? (
                 <View style={styles.item}>
                   <View style={styles.product}>
-                    <View>
-                      <View>
-                        <Text style={styles.title}>
-                          order number: {item.id}{" "}
-                        </Text>
-                      </View>
-                    </View>
+                    <View></View>
                   </View>
                   <View style={styles.button}>
-                    <Text style={styles.price}>Price: ${item.total_price}</Text>
+                    <Text style={styles.price}>Total: ${item.total_price}</Text>
                     <Text style={styles.price}>
                       Number of Items: {item.item_numbers}
                     </Text>
                   </View>
-
-                  <View style={styles.line} />
                   <View>
                     <ImageButton
                       icon={"card-outline"}
                       label="Check Out"
                       color={"green"}
+                      fun={
+                        () => {
+                          dispatch(payOrder(item.id));
+                        }
+                        // payOrdehandler({
+                        //   item: JSON.parse(item.order_items),
+                        //   id: item.id,
+                        // })
+                      }
                     />
+                  </View>
+                  <View style={styles.line} />
+                  <View>
+                    <OrderList order={item.order_items} text={item.id} />
                   </View>
                 </View>
               ) : null
@@ -82,7 +140,13 @@ export const OrderRecord = ({ navigation }) => {
       <View
         style={(styles.item, { backgroundColor: "yellow", borderRadius: 15 })}
       >
-        <Pressable onPress={() => setIstogglerec(!togglerec)}>
+        <Pressable
+          onPress={() => {
+            setIstogglerec(!togglerec);
+            setIstogglecom(true);
+            setIstogglepay(true);
+          }}
+        >
           <Text style={styles.titleText}>Pending received</Text>
         </Pressable>
         {togglerec ? null : (
@@ -91,15 +155,11 @@ export const OrderRecord = ({ navigation }) => {
             data={orders}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) =>
-              item.is_paid == 1 ? (
+              item.is_paid == 1 && item.is_delivered == 0 ? (
                 <View style={styles.item}>
                   <View style={styles.product}>
                     <View>
-                      <View>
-                        <Text style={styles.title}>
-                          order number: {item.id}{" "}
-                        </Text>
-                      </View>
+                      <View></View>
                     </View>
                   </View>
                   <View style={styles.button}>
@@ -109,13 +169,18 @@ export const OrderRecord = ({ navigation }) => {
                     </Text>
                   </View>
 
-                  <View style={styles.line} />
                   <View>
                     <ImageButton
                       icon={"checkbox-outline"}
-                      label="Check Out"
+                      label="Received"
                       color={"green"}
+                      fun={() => dispatch(receiveOrder(item.id))}
                     />
+                  </View>
+                  <View style={styles.line} />
+
+                  <View>
+                    <OrderList order={item.order_items} text={item.id} />
                   </View>
                 </View>
               ) : null
@@ -126,7 +191,13 @@ export const OrderRecord = ({ navigation }) => {
       <View
         style={(styles.item, { backgroundColor: "green", borderRadius: 15 })}
       >
-        <Pressable onPress={() => setIstogglecom(!togglecom)}>
+        <Pressable
+          onPress={() => {
+            setIstogglecom(!togglecom);
+            setIstogglepay(true);
+            setIstogglerec(true);
+          }}
+        >
           <Text style={styles.titleText}>Completed Orders</Text>
         </Pressable>
         {togglecom ? null : (
@@ -141,7 +212,7 @@ export const OrderRecord = ({ navigation }) => {
                     <View>
                       <View>
                         <Text style={styles.title}>
-                          order number: {item.id}{" "}
+                          order number: {item.id}
                         </Text>
                       </View>
                     </View>
@@ -154,6 +225,9 @@ export const OrderRecord = ({ navigation }) => {
                   </View>
 
                   <View style={styles.line} />
+                  <View>
+                    <OrderList order={item.order_items} text={item.id} />
+                  </View>
                 </View>
               ) : null
             }
@@ -200,7 +274,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "black",
   },
-  list: { height: "50%" },
+  list: { height: "82%" },
   item: {
     padding: 10,
     backgroundColor: "lightgrey",

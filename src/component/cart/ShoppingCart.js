@@ -69,7 +69,7 @@ export const ShoppingCart = ({ navigation }) => {
         token,
         items,
       });
-      console.log("inside handler", data);
+
       if (data.status === "OK") {
         const orderId = data.id;
         dispatch(clearCart());
@@ -77,8 +77,6 @@ export const ShoppingCart = ({ navigation }) => {
           addItemToOrder({
             id: orderId,
             order: items,
-            isPaid: 0,
-            isDelivered: 0,
           })
         );
         Alert.alert("Checkout successfully.");
@@ -110,11 +108,13 @@ export const ShoppingCart = ({ navigation }) => {
                     <Text style={styles.title}>{item.title}</Text>
                   </View>
                   <View style={styles.button}>
-                    <Text style={styles.price}>Price: ${item.price}</Text>
+                    <Text style={styles.price}>
+                      Price: ${item.price.toFixed(2)}
+                    </Text>
                     <Text style={styles.price}>Qty: {item.qty}</Text>
                   </View>
                   <Text style={styles.subtotal}>
-                    SubTotal: ${item.price * item.qty}
+                    SubTotal: ${(item.price * item.qty).toFixed(2)}
                   </Text>
                   <View style={styles.line} />
                   <View style={styles.button}>
@@ -143,15 +143,17 @@ export const ShoppingCart = ({ navigation }) => {
           )}
         </View>
       </View>
-      <View style={styles.bottom}>
-        <Text style={styles.titleText}> Total: ${total}</Text>
-        <ImageButton
-          label="Checkout"
-          icon={"card-outline"}
-          fun={() => checkoutHandler()}
-          color={"green"}
-        />
-      </View>
+      {total > 0 && (
+        <View style={styles.bottom}>
+          <Text style={styles.titleText}> Total: ${total.toFixed(2)}</Text>
+          <ImageButton
+            label="Checkout"
+            icon={"card-outline"}
+            fun={() => checkoutHandler()}
+            color={"green"}
+          />
+        </View>
+      )}
     </View>
   );
 };

@@ -86,6 +86,7 @@ const CustomDrawerContent = ({
                     )}
                   />
                 )}
+                <Text>Developed by Siu Wai Lo</Text>
               </View>
             )}
           </Pressable>

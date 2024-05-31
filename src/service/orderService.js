@@ -17,7 +17,7 @@ export const fetchOrder = async ({ token }) => {
   }
 };
 
-export const updateOrder = async ({ token, orders }) => {
+export const updateOrder = async ({ token, item }) => {
   const url = `http://${server}:${port}/orders/updateorder`;
   try {
     const res = await fetch(url, {
@@ -27,7 +27,7 @@ export const updateOrder = async ({ token, orders }) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ orders }),
+      body: JSON.stringify({ item }),
     });
     return await res.json();
   } catch (e) {

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { fetchOrder } from "../service/orderService";
 
 const initialState = {
-  orders: [], // Object of items in the cart, keyed by item ID
+  orders: [],
 };
 
 const orderSlice = createSlice({
@@ -10,13 +10,32 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     addItemToOrder(state, action) {
-      state.orders.push(action.payload.order);
-      console.log("orderslice", action.payload.order);
+      state.orders.push(action.payload);
+    },
+    fillOrder(state, action) {
+      state.orders = action.payload.orders;
+    },
+    payOrder(state, action) {
+      const id = action.payload;
+      const order = state.orders.find((order) => order.id === id);
+      if (order) {
+        order.is_paid = 1;
+      }
+    },
+    receiveOrder(state, action) {
+      const id = action.payload;
+      const order = state.orders.find((order) => order.id === id);
+      console.log(id, "inside slice", order);
+
+      if (order) {
+        order.is_delivered = 1;
+      }
     },
   },
 });
 
-export const { addItemToOrder } = orderSlice.actions;
+export const { addItemToOrder, fillOrder, payOrder, receiveOrder } =
+  orderSlice.actions;
 
 export const fillOrderFromFetch = (token) => async (dispatch) => {
   try {
@@ -26,5 +45,7 @@ export const fillOrderFromFetch = (token) => async (dispatch) => {
     console.log("Error in fillOrderFromFetch", e.message);
   }
 };
+
 export const orderRecord = (state) => state.order.orders;
+
 export default orderSlice.reducer;

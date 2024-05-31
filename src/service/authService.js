@@ -1,3 +1,4 @@
+import { Alert } from "react-native";
 import { port, server } from "./fetchAPI";
 
 export const signupUser = async ({ name, email, password }) => {
@@ -49,8 +50,10 @@ export const updateUserProfile = async ({ token, name, password }) => {
       },
       body: JSON.stringify(user),
     });
+    Alert.alert("Profile Update", "Profile updated successfully");
     return await res.json();
   } catch (e) {
     throw new Error("Can't update user:" + e.message);
+    Alert.alert("Profile Update", "Profile update failed");
   }
 };

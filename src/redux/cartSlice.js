@@ -72,7 +72,6 @@ export const totalQty = (state) => {
 export const fillCartFromFetch = (token) => async (dispatch) => {
   try {
     const data = await fetchCart({ token });
-    console.log("data", data.items);
     dispatch(fillCart({ items: data.items }));
   } catch (e) {
     console.log("Error in fillCartFromFetch", e.message);

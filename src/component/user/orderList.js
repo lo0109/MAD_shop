@@ -1,43 +1,46 @@
-import { FlatList, Text, View, StyleSheet } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  Image,
+} from "react-native";
 import { ImageButton } from "../imageButton";
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
-export const orderList = (orders, text) => {
-  const [toggle, setIstoggle] = useState(true);
+export const OrderList = ({ order, text }) => {
+  const [toggle, setToggle] = useState(true); // Changed to a more conventional name
+  const items = JSON.parse(order);
   return (
     <View>
-      <Pressable onPress={() => setIstoggle(!toggle)}>
-        <Text style={styles.titleText}>{text}</Text>
+      <Pressable onPress={() => setToggle(!toggle)}>
+        <Text style={styles.titleText}>
+          Order number: {text}
+          {toggle && <Ionicons name="chevron-expand-outline" size={22} />}
+        </Text>
       </Pressable>
+
       {toggle ? null : (
         <FlatList
-          style={styles.list}
-          data={orders}
-          keyExtractor={(item) => item.id.toString()}
+          data={items}
+          keyExtractor={items.id}
           renderItem={({ item }) => (
             <View style={styles.item}>
               <View style={styles.product}>
-                <View>
-                  <View>
-                    <Text style={styles.title}>order number: {item.id} </Text>
-                  </View>
-                </View>
+                <Image source={{ uri: item.image }} style={styles.image} />
+                <Text style={styles.title}>{item.title}</Text>
               </View>
               <View style={styles.button}>
-                <Text style={styles.price}>Price: ${item.total_price}</Text>
                 <Text style={styles.price}>
-                  Number of Items: {item.item_numbers}
+                  Price: ${item.price.toFixed(2)}
                 </Text>
+                <Text style={styles.price}>Qty: {item.qty}</Text>
               </View>
-
-              <View style={styles.line} />
-              <View>
-                <ImageButton
-                  icon={"card-outline"}
-                  label="Check Out"
-                  color={"green"}
-                />
-              </View>
+              <Text style={styles.subtotal}>
+                SubTotal: ${(item.price * item.qty).toFixed(2)}
+              </Text>
             </View>
           )}
         />
@@ -49,19 +52,17 @@ export const orderList = (orders, text) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5,
     flexDirection: "column",
     justifyContent: "space-around",
   },
-
   heading: {
     flexDirection: "row",
     justifyContent: "center",
     alignContent: "center",
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     borderRadius: 10,
   },
   titleText: {
@@ -82,18 +83,15 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "black",
   },
-  list: { height: "50%" },
+  list: {},
   item: {
-    padding: 10,
     backgroundColor: "lightgrey",
     borderRadius: 15,
-    marginVertical: 5,
   },
   product: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
-    // backgroundColor: "red",
   },
   title: {
     width: 250,

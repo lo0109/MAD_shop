@@ -26,15 +26,13 @@ const loginSlice = createSlice({
       state.token = "";
     },
     update(state, action) {
-      const { userID, userName, email } = action.payload;
-      state.userID = userID;
+      const { userName } = action.payload;
       state.userName = userName;
-      state.email = email;
     },
   },
 });
 
-export const { login, logout } = loginSlice.actions;
+export const { login, logout, update } = loginSlice.actions;
 
 export const userID = (state) => state.login.userID;
 export const userName = (state) => state.login.userName;
